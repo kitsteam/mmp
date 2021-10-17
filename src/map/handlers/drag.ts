@@ -57,11 +57,6 @@ export default class Drag {
      * @param {Node} node
      */
     private dragged(node: Node) {
-        if (node.isRoot()) {
-            Log.error("The root node can not be moved");
-            return
-        }
-
         let dy = d3.event.dy,
             dx = d3.event.dx;
 

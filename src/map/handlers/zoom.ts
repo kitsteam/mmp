@@ -66,10 +66,8 @@ export default class Zoom {
         }
 
         let root = this.map.nodes.getRoot(),
-            w = this.map.dom.container.node().clientWidth,
-            h = this.map.dom.container.node().clientHeight,
-            x = w / 2 - root.coordinates.x,
-            y = h / 2 - root.coordinates.y,
+            x = root.coordinates.x,
+            y = root.coordinates.y,
             svg = this.map.dom.svg.transition().duration(duration);
 
         switch (type) {
@@ -77,7 +75,7 @@ export default class Zoom {
                 this.zoomBehavior.scaleTo(svg, 1);
                 break;
             case "position":
-                this.zoomBehavior.translateTo(svg, w / 2 - x, h / 2 - y);
+                this.zoomBehavior.translateTo(svg, x, y);
                 break;
             default:
                 this.zoomBehavior.transform(svg, d3.zoomIdentity.translate(x, y));

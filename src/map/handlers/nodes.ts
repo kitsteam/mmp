@@ -44,8 +44,8 @@ export default class Nodes {
     public addRootNode(coordinates?: Coordinates) {
         let properties: NodeProperties = Utils.mergeObjects(this.map.options.rootNode, {
             coordinates: {
-                x: this.map.dom.container.node().clientWidth / 2,
-                y: this.map.dom.container.node().clientHeight / 2
+                x: 0,
+                y: 0
             },
             locked: false,
             id: this.map.id + "_node_" + this.counter,
@@ -626,10 +626,6 @@ export default class Nodes {
      * @returns {boolean}
      */
     private updateNodeCoordinates = (node: Node, coordinates: Coordinates) => {
-        if (node.isRoot()) {
-            Log.error("The root node can not be moved");
-            return false;
-        }
         let fixedCoordinates = coordinates;
 
         coordinates = Utils.mergeObjects(node.coordinates, fixedCoordinates, true) as Coordinates;

@@ -39,7 +39,6 @@ export default class History {
      */
     public new = (snapshot?: MapSnapshot) => {
         if (snapshot === undefined) {
-            let oldRootCoordinates = Utils.cloneObject(this.map.nodes.getRoot().coordinates);
 
             this.map.nodes.setCounter(0);
 
@@ -48,9 +47,9 @@ export default class History {
             this.map.draw.clear();
             this.map.draw.update();
 
-            this.map.nodes.addRootNode(oldRootCoordinates);
+            this.map.nodes.addRootNode();
 
-            this.map.zoom.center(null, 0);
+            this.map.zoom.center('position', 0);
 
             this.save();
 
@@ -196,8 +195,6 @@ export default class History {
             }
         }
 
-        this.translateNodePositions(snapshot);
-
         return true;
     }
 
@@ -264,25 +261,6 @@ export default class History {
                 weight: oldNode.value.bold ? "bold" : "normal",
                 style: oldNode.value.italic ? "italic" : "normal"
             };
-        }
-    }
-
-    /**
-     * Adapt the coordinates to the old map.
-     * @param {MapSnapshot} snapshot
-     */
-    private translateNodePositions(snapshot: MapSnapshot) {
-        let oldRootNode = this.map.nodes.getRoot(),
-            newRootNode = (<any>snapshot).find((node: ExportNodeProperties) => {
-                let words = node.id.split("_");
-                return words[words.length - 1] === "0";
-            }),
-            dx = newRootNode.coordinates.x - oldRootNode.coordinates.x,
-            dy = newRootNode.coordinates.y - oldRootNode.coordinates.y;
-
-        for (let node of snapshot) {
-            node.coordinates.x -= dx;
-            node.coordinates.y -= dy;
         }
     }
 

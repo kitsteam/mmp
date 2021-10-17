@@ -62,8 +62,6 @@ export default class Map {
             this.dom.svg.call(this.zoom.getZoomBehavior());
         }
 
-        this.nodes.addRootNode();
-
         this.history.save();
 
         return <any>this.createMmpInstance();
