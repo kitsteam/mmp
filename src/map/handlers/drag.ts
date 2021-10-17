@@ -3,6 +3,8 @@ import Map from "../map";
 import Node from "../models/node";
 import {Event} from "./events";
 import {DragBehavior} from "d3-drag";
+import Utils from "../../utils/utils";
+import Log from "../../utils/log";
 
 /**
  * Manage the drag events of the nodes.
@@ -55,6 +57,11 @@ export default class Drag {
      * @param {Node} node
      */
     private dragged(node: Node) {
+        if (node.isRoot()) {
+            Log.error("The root node can not be moved");
+            return
+        }
+
         let dy = d3.event.dy,
             dx = d3.event.dx;
 
@@ -105,7 +112,8 @@ export default class Drag {
         if (this.dragging) {
             this.dragging = false;
             this.map.history.save();
-            this.map.events.call(Event.nodeUpdate, node.dom, this.map.nodes.getNodeProperties(node));
+            // previousValue is not accessible here, therefore we are passing null
+            this.map.events.call(Event.nodeUpdate, node.dom, { nodeProperties: this.map.nodes.getNodeProperties(node), changedProperty: 'coordinates' });
         }
     }
 

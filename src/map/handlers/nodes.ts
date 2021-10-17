@@ -24,6 +24,7 @@ export default class Nodes {
     private counter: number;
     private nodes: D3Map<Node>;
     private selectedNode: Node;
+    static NodePropertyMapping: any;
 
     /**
      * Get the associated map instance and initialize counter and nodes.
@@ -97,11 +98,11 @@ export default class Nodes {
         // Set coordinates
         node.coordinates = this.calculateCoordinates(node);
 
-        if (userProperties && userProperties.coordinates) {
-            let fixedCoordinates = this.fixCoordinates(userProperties.coordinates);
+        // if (userProperties && userProperties.coordinates) {
+        //     let fixedCoordinates = this.fixCoordinates(userProperties.coordinates);
 
-            node.coordinates = Utils.mergeObjects(node.coordinates, fixedCoordinates, true) as Coordinates;
-        }
+        //     node.coordinates = Utils.mergeObjects(node.coordinates, fixedCoordinates, true) as Coordinates;
+        // }
 
         this.map.draw.update();
 
@@ -150,6 +151,24 @@ export default class Nodes {
         return this.getNodeProperties(this.selectedNode);
     };
 
+
+    /**
+     * Check if a node exist
+     * @param {string} id
+     * @returns {boolean}
+     */
+    public existNode = (id?: string): boolean => {
+        if (id !== undefined) {
+            if (typeof id !== "string") {
+                Log.error("The node id must be a string", "type");
+                return false;
+            }
+
+            return this.nodes.has(id); 
+        }
+        return false;
+    };
+
     /**
      * Enable the node name editing of the selected node.
      */
@@ -196,43 +215,44 @@ export default class Nodes {
         }
 
         let updated: any;
+        const previousValue: any = Utils.get(node, PropertyMapping[property])
 
         switch (property) {
             case "name":
-                updated = this.updateNodeName(this.selectedNode, value, graphic);
+                updated = this.updateNodeName(node, value, graphic);
                 break;
             case "locked":
-                updated = this.updateNodeLockedStatus(this.selectedNode, value);
+                updated = this.updateNodeLockedStatus(node, value);
                 break;
             case "coordinates":
-                updated = this.updateNodeCoordinates(this.selectedNode, value);
+                updated = this.updateNodeCoordinates(node, value);
                 break;
             case "imageSrc":
-                updated = this.updateNodeImageSrc(this.selectedNode, value);
+                updated = this.updateNodeImageSrc(node, value);
                 break;
             case "imageSize":
-                updated = this.updateNodeImageSize(this.selectedNode, value, graphic);
+                updated = this.updateNodeImageSize(node, value, graphic);
                 break;
             case "backgroundColor":
-                updated = this.updateNodeBackgroundColor(this.selectedNode, value, graphic);
+                updated = this.updateNodeBackgroundColor(node, value, graphic);
                 break;
             case "branchColor":
-                updated = this.updateNodeBranchColor(this.selectedNode, value, graphic);
+                updated = this.updateNodeBranchColor(node, value, graphic);
                 break;
             case "fontWeight":
-                updated = this.updateNodeFontWeight(this.selectedNode, value, graphic);
+                updated = this.updateNodeFontWeight(node, value, graphic);
                 break;
             case "textDecoration":
-                updated = this.updateNodeTextDecoration(this.selectedNode, value, graphic);
+                updated = this.updateNodeTextDecoration(node, value, graphic);
                 break;
             case "fontStyle":
-                updated = this.updateNodeFontStyle(this.selectedNode, value, graphic);
+                updated = this.updateNodeFontStyle(node, value, graphic);
                 break;
             case "fontSize":
-                updated = this.updateNodeFontSize(this.selectedNode, value, graphic);
+                updated = this.updateNodeFontSize(node, value, graphic);
                 break;
             case "nameColor":
-                updated = this.updateNodeNameColor(this.selectedNode, value, graphic);
+                updated = this.updateNodeNameColor(node, value, graphic);
                 break;
             default:
                 Log.error("The property does not exist");
@@ -240,7 +260,7 @@ export default class Nodes {
 
         if (graphic === false && updated !== false) {
             this.map.history.save();
-            this.map.events.call(Event.nodeUpdate, this.selectedNode.dom, this.getNodeProperties(this.selectedNode));
+            this.map.events.call(Event.nodeUpdate, node.dom, { nodeProperties: this.getNodeProperties(node), changedProperty: property, previousValue: previousValue });
         }
     };
 
@@ -308,7 +328,7 @@ export default class Nodes {
      * @param {boolean} fixedCoordinates
      * @returns {ExportNodeProperties} properties
      */
-    public getNodeProperties(node: Node, fixedCoordinates: boolean = true): ExportNodeProperties {
+    public getNodeProperties(node: Node, fixedCoordinates: boolean = false): ExportNodeProperties {
         return {
             id: node.id,
             parent: node.parent ? node.parent.id : "",
@@ -350,7 +370,7 @@ export default class Nodes {
             }
         }
 
-        return fixedCoordinates;
+        return coordinates;
     }
 
     /**
@@ -402,7 +422,7 @@ export default class Nodes {
      * Return the root node.
      * @returns {Node} rootNode
      */
-    public getRoot(): Node {
+    public getRoot = (): Node => {
         return this.nodes.get(this.map.id + "_node_0");
     }
 
@@ -432,8 +452,14 @@ export default class Nodes {
      * @param {string} id
      * @returns {Node}
      */
-    public getNode(id: string): Node {
-        return this.nodes.get(id);
+    public getNode(id: string): any {
+        if (id !== undefined) {
+            if (typeof id !== "string") {
+                Log.error("The node id must be a string", "type");
+                return;
+            }
+            return this.nodes.get(id);
+        }
     }
 
     /**
@@ -600,7 +626,11 @@ export default class Nodes {
      * @returns {boolean}
      */
     private updateNodeCoordinates = (node: Node, coordinates: Coordinates) => {
-        let fixedCoordinates = this.fixCoordinates(coordinates);
+        if (node.isRoot()) {
+            Log.error("The root node can not be moved");
+            return false;
+        }
+        let fixedCoordinates = coordinates;
 
         coordinates = Utils.mergeObjects(node.coordinates, fixedCoordinates, true) as Coordinates;
 
@@ -951,3 +981,18 @@ export default class Nodes {
     }
 
 }
+
+export const PropertyMapping = {
+    "name": ['name'],
+    "locked": ['locked'],
+    'coordinates': ['coordinates'],
+    'imageSrc': ['image', 'src'],
+    'imageSize': ['image', 'size'],
+    'backgroundColor': ['colors', 'background'],
+    'branchColor': ['colors', 'branch'],
+    'fontWeight': ['font', 'weight'],
+    'textDecoration': [],
+    'fontStyle': ['font', 'style'],
+    'fontSize': ['font', 'size'],
+    'nameColor': ['colors', 'name']
+} as const

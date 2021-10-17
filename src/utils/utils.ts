@@ -155,4 +155,12 @@ export default class Utils {
         sel.addRange(range);
     }
 
+    /**
+     * Gets the nested property of object
+     * @param obj
+     * @param path
+     */
+    static get = (obj: any, path: string[]) =>
+        path.reduce((nestedObj, currentPath) => (nestedObj && nestedObj[currentPath]) ? nestedObj[currentPath] : null, obj)
+
 }
