@@ -653,6 +653,8 @@ export default class Nodes {
                     }
 
                     node.dom.setAttribute("transform", "translate(" + [x, y] + ")");
+
+                    this.map.events.call(Event.nodeUpdate, node.dom, { nodeProperties: this.getNodeProperties(node), changedProperty: 'coordinates', previousValue: node.coordinates });
                 }
             }
 
