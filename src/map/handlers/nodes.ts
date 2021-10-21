@@ -95,14 +95,7 @@ export default class Nodes {
 
         this.counter++;
 
-        // Set coordinates
         node.coordinates = this.calculateCoordinates(node);
-
-        // if (userProperties && userProperties.coordinates) {
-        //     let fixedCoordinates = this.fixCoordinates(userProperties.coordinates);
-
-        //     node.coordinates = Utils.mergeObjects(node.coordinates, fixedCoordinates, true) as Coordinates;
-        // }
 
         this.map.draw.update();
 
@@ -452,7 +445,7 @@ export default class Nodes {
      * @param {string} id
      * @returns {Node}
      */
-    public getNode(id: string): any {
+    public getNode = (id: string): any => {
         if (id !== undefined) {
             if (typeof id !== "string") {
                 Log.error("The node id must be a string", "type");
@@ -625,25 +618,25 @@ export default class Nodes {
      * @param {Coordinates} coordinates
      * @returns {boolean}
      */
-    private updateNodeCoordinates = (node: Node, coordinates: Coordinates) => {
+    private updateNodeCoordinates = (initialNode: Node, coordinates: Coordinates) => {
         let fixedCoordinates = coordinates;
 
-        coordinates = Utils.mergeObjects(node.coordinates, fixedCoordinates, true) as Coordinates;
+        coordinates = Utils.mergeObjects(initialNode.coordinates, fixedCoordinates, true) as Coordinates;
 
-        if (!(coordinates.x === node.coordinates.x && coordinates.y === node.coordinates.y)) {
-            let oldOrientation = this.getOrientation(this.selectedNode),
-                dx = node.coordinates.x - coordinates.x,
-                dy = node.coordinates.y - coordinates.y;
+        if (!(coordinates.x === initialNode.coordinates.x && coordinates.y === initialNode.coordinates.y)) {
+            let oldOrientation = this.getOrientation(initialNode),
+                dx = initialNode.coordinates.x - coordinates.x,
+                dy = initialNode.coordinates.y - coordinates.y;
 
-            node.coordinates = Utils.cloneObject(coordinates) as Coordinates;
+                initialNode.coordinates = Utils.cloneObject(coordinates) as Coordinates;
 
-            node.dom.setAttribute("transform", "translate(" + [coordinates.x, coordinates.y] + ")");
+            initialNode.dom.setAttribute("transform", "translate(" + [coordinates.x, coordinates.y] + ")");
 
             // If the node is locked move also descendants
-            if (this.selectedNode.locked) {
-                let root = this.selectedNode,
-                    descendants = this.getDescendants(this.selectedNode),
-                    newOrientation = this.getOrientation(this.selectedNode);
+            if (initialNode.locked) {
+                let root = initialNode,
+                    descendants = this.getDescendants(initialNode),
+                    newOrientation = this.getOrientation(initialNode);
 
                 for (let node of descendants) {
                     let x = node.coordinates.x -= dx, y = node.coordinates.y -= dy;
