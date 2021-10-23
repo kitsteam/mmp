@@ -49,7 +49,7 @@ export default class Options implements OptionParameters {
                 style: "normal",
                 weight: "normal"
             },
-            locked: true
+            locked: true,
         }, parameters.defaultNode, true) as DefaultNodeProperties;
 
         // Default root node properties
@@ -68,7 +68,7 @@ export default class Options implements OptionParameters {
                 size: 20,
                 style: "normal",
                 weight: "normal"
-            }
+            },
         }, parameters.rootNode, true) as DefaultNodeProperties;
     }
 

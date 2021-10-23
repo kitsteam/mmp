@@ -119,8 +119,8 @@ export default class History {
 
         snapshot.forEach((property: ExportNodeProperties) => {
             let properties: NodeProperties = {
-                id: this.sanitizeNodeId(property.id),
-                parent: this.map.nodes.getNode(this.sanitizeNodeId(property.parent)),
+                id: property.id,
+                parent: this.map.nodes.getNode(property.parent),
                 k: property.k,
                 name: property.name,
                 coordinates: Utils.cloneObject(property.coordinates) as Coordinates,
@@ -161,18 +161,6 @@ export default class History {
             return parseInt(words[words.length - 1])
         });
         this.map.nodes.setCounter(Math.max(...id) + 1);
-    }
-
-    /**
-     * Sanitize an old map node id with a new.
-     * @param {string} oldId
-     * @returns {string} newId
-     */
-    private sanitizeNodeId(oldId: string) {
-        if (typeof oldId === "string") {
-            let words = oldId.split("_");
-            return this.map.id + "_" + words[words.length - 2] + "_" + words[words.length - 1];
-        }
     }
 
     /**

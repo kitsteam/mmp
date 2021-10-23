@@ -9,6 +9,7 @@ import Node, {
 } from "../models/node";
 import Map from "../map";
 import * as d3 from "d3";
+import { v4 as uuidv4 } from "uuid";
 import {Map as D3Map} from "d3-collection";
 import {Event} from "./events";
 import Log from "../../utils/log";
@@ -48,7 +49,7 @@ export default class Nodes {
                 y: 0
             },
             locked: false,
-            id: this.map.id + "_node_" + this.counter,
+            id: 'root',
             parent: null
         }) as NodeProperties;
 
@@ -71,22 +72,23 @@ export default class Nodes {
     /**
      * Add a node in the map.
      * @param {UserNodeProperties} userProperties
-     * @param {string} id
+     * @param {string} parentId
+     * @param {string} overwriteId
      */
-    public addNode = (userProperties?: UserNodeProperties, id?: string) => {
-        if (id && typeof id !== "string") {
+    public addNode = (userProperties?: UserNodeProperties, parentId?: string, overwriteId?: string) => {
+        if (parentId && typeof parentId !== "string") {
             Log.error("The node id must be a string", "type");
         }
 
-        let parentNode: Node = id ? this.getNode(id) : this.selectedNode;
+        let parentNode: Node = parentId ? this.getNode(parentId) : this.selectedNode;
 
         if (parentNode === undefined) {
-            Log.error("There are no nodes with id \"" + id + "\"");
+            Log.error("There are no nodes with id \"" + parentId + "\"");
         }
 
         let properties: NodeProperties = Utils.mergeObjects(this.map.options.defaultNode, userProperties, true) as NodeProperties;
 
-        properties.id = this.map.id + "_node_" + this.counter;
+        properties.id = overwriteId || uuidv4();
         properties.parent = parentNode;
 
         let node: Node = new Node(properties);
@@ -416,7 +418,7 @@ export default class Nodes {
      * @returns {Node} rootNode
      */
     public getRoot = (): Node => {
-        return this.nodes.get(this.map.id + "_node_0");
+        return this.nodes.get('root')
     }
 
     /**
@@ -492,7 +494,7 @@ export default class Nodes {
      * Set the root node as selected node.
      */
     public selectRootNode() {
-        this.selectedNode = this.nodes.get(this.map.id + "_node_0");
+        this.selectedNode = this.getRoot()
     }
 
     /**
