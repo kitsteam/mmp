@@ -218,7 +218,7 @@ export default class Nodes {
                 updated = this.updateNodeLockedStatus(node, value);
                 break;
             case "coordinates":
-                updated = this.updateNodeCoordinates(node, value);
+                updated = this.updateNodeCoordinatesWithoutDescendants(node, value);
                 break;
             case "imageSrc":
                 updated = this.updateNodeImageSrc(node, value);
@@ -614,42 +614,21 @@ export default class Nodes {
 
     /**
      * Update the node coordinates with a new value.
+     * The main method for moving nodes is located inside the drag module.
+     * This method acts as a more simpler way of just moving one node.
      * @param {Node} node
      * @param {Coordinates} coordinates
      * @returns {boolean}
      */
-    private updateNodeCoordinates = (initialNode: Node, coordinates: Coordinates) => {
+    private updateNodeCoordinatesWithoutDescendants = (initialNode: Node, coordinates: Coordinates) => {
+        // no moving of descendants here
         let fixedCoordinates = coordinates;
 
         coordinates = Utils.mergeObjects(initialNode.coordinates, fixedCoordinates, true) as Coordinates;
 
         if (!(coordinates.x === initialNode.coordinates.x && coordinates.y === initialNode.coordinates.y)) {
-            let oldOrientation = this.getOrientation(initialNode),
-                dx = initialNode.coordinates.x - coordinates.x,
-                dy = initialNode.coordinates.y - coordinates.y;
-
-                initialNode.coordinates = Utils.cloneObject(coordinates) as Coordinates;
-
+            initialNode.coordinates = Utils.cloneObject(coordinates) as Coordinates;
             initialNode.dom.setAttribute("transform", "translate(" + [coordinates.x, coordinates.y] + ")");
-
-            // If the node is locked move also descendants
-            if (initialNode.locked) {
-                let root = initialNode,
-                    descendants = this.getDescendants(initialNode),
-                    newOrientation = this.getOrientation(initialNode);
-
-                for (let node of descendants) {
-                    let x = node.coordinates.x -= dx, y = node.coordinates.y -= dy;
-
-                    if (oldOrientation !== newOrientation) {
-                        x = node.coordinates.x += (root.coordinates.x - node.coordinates.x) * 2;
-                    }
-
-                    node.dom.setAttribute("transform", "translate(" + [x, y] + ")");
-
-                    this.map.events.call(Event.nodeUpdate, node.dom, { nodeProperties: this.getNodeProperties(node), changedProperty: 'coordinates', previousValue: node.coordinates });
-                }
-            }
 
             d3.selectAll("." + this.map.id + "_branch").attr("d", (node: Node) => {
                 return <any>this.map.draw.drawBranch(node);

@@ -107,7 +107,13 @@ export default class Drag {
         if (this.dragging) {
             this.dragging = false;
             this.map.history.save();
-            // previousValue is not accessible here, therefore we are passing null
+
+            if (node.locked) {
+                for (let node of this.descendants) {
+                    this.map.events.call(Event.nodeUpdate, node.dom, { nodeProperties: this.map.nodes.getNodeProperties(node), changedProperty: 'coordinates' });
+                }
+            }
+
             this.map.events.call(Event.nodeUpdate, node.dom, { nodeProperties: this.map.nodes.getNodeProperties(node), changedProperty: 'coordinates' });
         }
     }
