@@ -53,15 +53,17 @@ export default class History {
 
             this.save();
 
-            this.map.events.call(Event.create);
+            this.map.events.call(Event.create, this.map.dom);
         } else if (this.checkSnapshotStructure(snapshot)) {
+            const previousData = this.map.export.asJSON();
+
             this.redraw(snapshot);
 
             this.map.zoom.center("position", 0);
 
             this.save();
 
-            this.map.events.call(Event.create);
+            this.map.events.call(Event.create, this.map.dom, { previousMap: previousData });
         } else {
             Log.error("The snapshot is not correct");
         }
