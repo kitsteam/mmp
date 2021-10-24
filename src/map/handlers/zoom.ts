@@ -75,10 +75,8 @@ export default class Zoom {
                 this.zoomBehavior.scaleTo(svg, 1);
                 break;
             case "position":
-                this.zoomBehavior.translateTo(svg, x, y);
-                break;
             default:
-                this.zoomBehavior.transform(svg, d3.zoomIdentity.translate(x, y));
+                this.zoomBehavior.translateTo(svg, x, y);
         }
 
         this.map.events.call(Event.center);
