@@ -17,6 +17,7 @@ export default class Map {
 
     public id: string;
     public dom: DomElements;
+    public rootId: string;
 
     public options: Options;
     public history: History;
@@ -49,6 +50,7 @@ export default class Map {
         this.nodes = new Nodes(this);
         this.export = new Export(this);
         this.copyPaste = new CopyPaste(this);
+        this.rootId = '';
 
         this.draw.create();
 

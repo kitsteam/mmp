@@ -43,15 +43,19 @@ export default class Nodes {
      * @param {Coordinates} coordinates
      */
     public addRootNode(coordinates?: Coordinates) {
+        const rootId = uuidv4();
+
         let properties: NodeProperties = Utils.mergeObjects(this.map.options.rootNode, {
             coordinates: {
                 x: 0,
                 y: 0
             },
             locked: false,
-            id: 'root',
+            id: rootId,
             parent: null
         }) as NodeProperties;
+
+        this.map.rootId = rootId;
 
         let node: Node = new Node(properties);
 
@@ -452,7 +456,7 @@ export default class Nodes {
      * @returns {Node} rootNode
      */
     public getRoot = (): Node => {
-        return this.nodes.get('root')
+        return this.nodes.get(this.map.rootId)
     }
 
     /**
