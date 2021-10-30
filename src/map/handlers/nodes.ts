@@ -7,7 +7,7 @@ import Node, {
     NodeProperties,
     UserNodeProperties
 } from "../models/node";
-import Map from "../map";
+import Map, { DomElements } from "../map";
 import * as d3 from "d3";
 import { v4 as uuidv4 } from "uuid";
 import {Map as D3Map} from "d3-collection";
@@ -122,19 +122,21 @@ export default class Nodes {
                     let node = this.nodes.get(id),
                         background = node.getBackgroundDOM();
 
-                    if (!background.style.stroke) {
+                    let color = d3.color(background.style.fill).darker(.5);
+
+                    if (background.style.stroke !== color.toString()) {
                         if (this.selectedNode) {
                             this.selectedNode.getBackgroundDOM().style.stroke = "";
                         }
 
-                        let color = d3.color(background.style.fill).darker(.5);
                         background.style.stroke = color.toString();
 
                         Utils.removeAllRanges();
                         this.selectedNode.getNameDOM().blur();
 
-                        this.selectedNode = node;
+                        this.map.events.call(Event.nodeDeselect, this.selectedNode.dom, this.getNodeProperties(this.selectedNode));
 
+                        this.selectedNode = node;
                         this.map.events.call(Event.nodeSelect, node.dom, this.getNodeProperties(node));
                     }
                 } else {
@@ -144,6 +146,33 @@ export default class Nodes {
         }
 
         return this.getNodeProperties(this.selectedNode);
+    };
+
+    /**
+     * Highlighs node with a border
+     * @param {string} id
+     * @param {string} color
+     * @returns {void}
+     */
+        public highlightNodeWithColor = (id: string, color: string): void => {
+        if (id !== undefined) {
+            if (typeof id !== "string") {
+                Log.error("The node id must be a string", "type");
+            }
+
+            if (this.nodes.has(id)) {
+                let node = this.nodes.get(id),
+                    background = node.getBackgroundDOM();
+
+                if (background.style.stroke !== color) {
+                    background.style.stroke = color
+
+                    this.map.events.call(Event.nodeUpdate, node.dom, this.getNodeProperties(node));
+                }
+            } else {
+                Log.error("The node id is not correct");
+            }
+        }
     };
 
 
@@ -177,6 +206,11 @@ export default class Nodes {
      * Deselect the current selected node.
      */
     public deselectNode = () => {
+        if(this.selectedNode?.id === this.getRoot().id) return
+
+        const oldNodeProps: ExportNodeProperties = this.getNodeProperties(this.selectedNode);
+        const oldDom: SVGGElement = this.selectedNode.dom;
+
         if (this.selectedNode) {
             this.selectedNode.getBackgroundDOM().style.stroke = "";
             Utils.removeAllRanges();
@@ -184,7 +218,7 @@ export default class Nodes {
 
         this.selectRootNode();
 
-        this.map.events.call(Event.nodeDeselect);
+        this.map.events.call(Event.nodeDeselect, oldDom, oldNodeProps);
     };
 
     /**
@@ -486,7 +520,7 @@ export default class Nodes {
      * Return the current selected node.
      * @returns {Node}
      */
-    public getSelectedNode(): Node {
+    public getSelectedNode = (): Node => {
         return this.selectedNode;
     }
 

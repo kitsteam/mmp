@@ -85,66 +85,70 @@ export default class Map {
      */
     private createMmpInstance(): MmpInstance {
         return this.instance = {
-            on: this.events.on,
-            remove: this.remove,
-            new: this.history.new,
-            updateOptions: this.options.update,
-            exportAsJSON: this.export.asJSON,
-            exportAsImage: this.export.asImage,
-            history: this.history.getHistory,
-            undo: this.history.undo,
-            redo: this.history.redo,
-            zoomIn: this.zoom.zoomIn,
-            zoomOut: this.zoom.zoomOut,
-            center: this.zoom.center,
             addNode: this.nodes.addNode,
-            selectNode: this.nodes.selectNode,
-            getRoot: this.nodes.getRoot,
-            getNode: this.nodes.getNode,
-            existNode: this.nodes.existNode,
-            editNode: this.nodes.editNode,
-            deselectNode: this.nodes.deselectNode,
-            nodeChildren: this.nodes.nodeChildren,
-            updateNode: this.nodes.updateNode,
-            removeNode: this.nodes.removeNode,
+            center: this.zoom.center,
             copyNode: this.copyPaste.copy,
             cutNode: this.copyPaste.cut,
-            pasteNode: this.copyPaste.paste
+            deselectNode: this.nodes.deselectNode,
+            editNode: this.nodes.editNode,
+            existNode: this.nodes.existNode,
+            exportAsImage: this.export.asImage,
+            exportAsJSON: this.export.asJSON,
+            getNode: this.nodes.getNode,
+            getRoot: this.nodes.getRoot,
+            getSelectedNode: this.nodes.getSelectedNode,
+            highlightNode: this.nodes.highlightNodeWithColor,
+            history: this.history.getHistory,
+            new: this.history.new,
+            nodeChildren: this.nodes.nodeChildren,
+            on: this.events.on,
+            pasteNode: this.copyPaste.paste,
+            redo: this.history.redo,
+            remove: this.remove,
+            removeNode: this.nodes.removeNode,
+            selectNode: this.nodes.selectNode,
+            undo: this.history.undo,
+            updateNode: this.nodes.updateNode,
+            updateOptions: this.options.update,
+            zoomIn: this.zoom.zoomIn,
+            zoomOut: this.zoom.zoomOut
         };
     }
 
 }
 
 export interface MmpInstance {
-    on: Function;
-    remove: Function;
-    new: Function;
-    updateOptions: Function,
-    exportAsJSON: Function;
-    exportAsImage: Function;
-    history: Function;
-    undo: Function;
-    redo: Function;
-    zoomIn: Function;
-    zoomOut: Function;
-    center: Function;
     addNode: Function;
-    selectNode: Function;
-    getRoot: Function;
-    getNode: Function,
-    existNode: Function;
-    editNode: Function;
-    deselectNode: Function;
-    nodeChildren: Function;
-    updateNode: Function;
-    removeNode: Function;
+    center: Function;
     copyNode: Function;
     cutNode: Function;
+    deselectNode: Function;
+    editNode: Function;
+    existNode: Function;
+    exportAsImage: Function;
+    exportAsJSON: Function;
+    getNode: Function,
+    getRoot: Function;
+    getSelectedNode: Function;
+    highlightNode: Function;
+    history: Function;
+    new: Function;
+    nodeChildren: Function;
+    on: Function;
     pasteNode: Function;
+    redo: Function;
+    remove: Function;
+    removeNode: Function;
+    selectNode: Function;
+    undo: Function;
+    updateNode: Function;
+    updateOptions: Function,
+    zoomIn: Function;
+    zoomOut: Function;
 }
 
 export interface DomElements {
     container?: any;
-    svg?: any;
     g?: any;
+    svg?: any;
 }
