@@ -17,6 +17,7 @@ export default class Node implements NodeProperties {
     public font: Font;
     public locked: boolean;
     public dom: SVGGElement;
+    public isRoot: boolean;
 
     /**
      * Initialize the node properties, the dimensions and the k coefficient.
@@ -31,20 +32,13 @@ export default class Node implements NodeProperties {
         this.image = properties.image;
         this.font = properties.font;
         this.locked = properties.locked;
+        this.isRoot = properties.isRoot
 
         this.dimensions = {
             width: 0,
             height: 0
         };
         this.k = properties.k || d3.randomUniform(-20, 20)();
-    }
-
-    /**
-     * Return true if the node is the root or false.
-     * @returns {boolean}
-     */
-    public isRoot() {
-        return this.id === 'root';
     }
 
     /**
@@ -95,6 +89,7 @@ export interface UserNodeProperties {
     colors: Colors;
     font: Font;
     locked: boolean;
+    isRoot: boolean;
 }
 
 export interface NodeProperties extends UserNodeProperties {

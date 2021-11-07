@@ -52,7 +52,8 @@ export default class Nodes {
             },
             locked: false,
             id: rootId,
-            parent: null
+            parent: null,
+            isRoot: true
         }) as NodeProperties;
 
         this.map.rootId = rootId;
@@ -312,7 +313,7 @@ export default class Nodes {
             Log.error("There are no nodes with id \"" + id + "\"");
         }
 
-        if (!node.isRoot()) {
+        if (!node.isRoot) {
             this.nodes.remove(node.id);
 
             this.getDescendants(node).forEach((node: Node) => {
@@ -373,6 +374,7 @@ export default class Nodes {
             colors: Utils.cloneObject(node.colors) as Colors,
             font: Utils.cloneObject(node.font) as Font,
             locked: node.locked,
+            isRoot: node.isRoot,
             k: node.k
         };
     }
@@ -446,7 +448,7 @@ export default class Nodes {
      * @return {boolean}
      */
     public getOrientation(node: Node): boolean {
-        if (!node.isRoot()) {
+        if (!node.isRoot) {
             return node.coordinates.x < this.getRoot().coordinates.x;
         }
     }
@@ -548,7 +550,7 @@ export default class Nodes {
      * @returns {Array<Node>} siblings
      */
     private getSiblings(node: Node): Array<Node> {
-        if (!node.isRoot()) {
+        if (!node.isRoot) {
             let parentChildren: Array<Node> = this.getChildren(node.parent);
 
             if (parentChildren.length > 1) {
@@ -574,7 +576,7 @@ export default class Nodes {
             },
             siblings: Array<Node> = this.getSiblings(node);
 
-        if (node.parent.isRoot()) {
+        if (node.parent.isRoot) {
             let rightNodes: Array<Node> = [],
                 leftNodes: Array<Node> = [];
 
@@ -742,7 +744,7 @@ export default class Nodes {
             Log.error("The branch color must be a string", "type");
         }
 
-        if (!node.isRoot()) {
+        if (!node.isRoot) {
             if (node.colors.name !== color || graphic) {
                 let branch = document.getElementById(node.id + "_branch");
 
@@ -923,7 +925,7 @@ export default class Nodes {
             Log.error("The node locked status must be a boolean", "type");
         }
 
-        if (!node.isRoot()) {
+        if (!node.isRoot) {
             node.locked = flag || !node.locked;
         } else {
             Log.error("The root node can not be locked");
@@ -935,12 +937,12 @@ export default class Nodes {
      * @param {boolean} direction
      */
     private moveSelectionOnLevel(direction: boolean) {
-        if (!this.selectedNode.isRoot()) {
+        if (!this.selectedNode.isRoot) {
             let siblings = this.getSiblings(this.selectedNode).filter((node: Node) => {
                 return direction === node.coordinates.y < this.selectedNode.coordinates.y;
             });
 
-            if (this.selectedNode.parent.isRoot()) {
+            if (this.selectedNode.parent.isRoot) {
                 siblings = siblings.filter((node: Node) => {
                     return this.getOrientation(node) === this.getOrientation(this.selectedNode);
                 });

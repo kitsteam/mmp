@@ -36,7 +36,7 @@ export default class CopyPaste {
             Log.error("There are no nodes with id \"" + id + "\"");
         }
 
-        if (!node.isRoot()) {
+        if (!node.isRoot) {
             this.copiedNodes = [this.map.nodes.getNodeProperties(node, false)];
 
             this.map.nodes.getDescendants(node).forEach((node: Node) => {
@@ -63,7 +63,7 @@ export default class CopyPaste {
             Log.error("There are no nodes with id \"" + id + "\"");
         }
 
-        if (!node.isRoot()) {
+        if (!node.isRoot) {
             this.copiedNodes = [this.map.nodes.getNodeProperties(node, false)];
 
             this.map.nodes.getDescendants(node).forEach((node: Node) => {
@@ -132,7 +132,8 @@ export default class CopyPaste {
                 image: nodePropertiesCopy.image,
                 colors: nodePropertiesCopy.colors,
                 font: nodePropertiesCopy.font,
-                locked: nodePropertiesCopy.locked
+                locked: nodePropertiesCopy.locked,
+                isRoot: nodePropertiesCopy.isRoot,
             }, newParentNode.id);
 
             const children = this.copiedNodes.filter((np: ExportNodeProperties) => {

@@ -129,11 +129,14 @@ export default class History {
                 image: Utils.cloneObject(property.image) as Image,
                 colors: Utils.cloneObject(property.colors) as Colors,
                 font: Utils.cloneObject(property.font) as Font,
-                locked: property.locked
+                locked: property.locked,
+                isRoot: property.isRoot
             };
 
             let node: Node = new Node(properties);
             this.map.nodes.setNode(node.id, node);
+
+            if(property.isRoot) this.map.rootId = property.id
         });
 
         this.map.draw.clear();
